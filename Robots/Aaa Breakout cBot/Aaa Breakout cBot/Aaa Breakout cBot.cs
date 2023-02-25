@@ -25,6 +25,8 @@ namespace cAlgo
     {
         [Parameter("Order Price", DefaultValue = 0, MinValue = 0, Step = 1)]
         public double OrderPrice { get; set; }
+        [Parameter("Breakout Period", DefaultValue = 24 * 60 * 60, MinValue = 0, Step = 1)]
+        public int BreakoutPeriod { get; set; }
 
         protected override void OnBar()
         {
@@ -32,15 +34,29 @@ namespace cAlgo
                 return;
 
             Bar bar0 = Bars.Last(0);
-            double close1 = Bars.Last(0).Close;
-            double close2 = Bars.Last(1).Close;
-            double close3 = Bars.Last(2).Close;
+            double high0 = bar0.High;
 
-            if (close1 == close2 && close2 == close3) {
+            if (high0 == Bars.Last(1).High && high0 == Bars.Last(2).High) {
                 // ExecuteMarketOrder(TradeType.Buy, Symbol, Volume, "Stop Buy", StopLoss, OrderPrice);
                 Print("Tirple-Close Signal: {}", bar0);
+                Bar prev;
+                if (prev = IsResistanceLevel(high0) == null) {
+                    Print("Win! {0}...{1}-{2}", prev.OpenTime, bar1.OpenTime, bar3.OpenTime);                        
+                    break;
+                }
             }
         }
+
+        private Bar IsResistanceLevel(double level) {
+            for (int i = 0; i < BreakoutPeriod; i++) {
+                Bar bar = bars.Last(3 + i);
+                if (bar.High == level) {
+                    return bars;
+                }
+            }
+            return null;
+        }
+
     }
     
 }
