@@ -35,28 +35,44 @@ namespace cAlgo
 
             Bar bar0 = Bars.Last(0);
             double high0 = bar0.High;
+            double low0 = bar0.Low;
 
             if (high0 == Bars.Last(1).High && high0 == Bars.Last(2).High) {
                 // ExecuteMarketOrder(TradeType.Buy, Symbol, Volume, "Stop Buy", StopLoss, OrderPrice);
-                Print("Tirple-Close Signal: {}", bar0);
-                Bar prev;
-                if (prev = IsResistanceLevel(high0) == null) {
-                    Print("Win! {0}...{1}-{2}", prev.OpenTime, bar1.OpenTime, bar3.OpenTime);                        
-                    break;
+                Print("Tirple-High Signal: {0}", bar0);
+                Bar? prev = ResistanceLevel(high0, true);
+                if (prev != null) {
+                    Print("Win! {0}...{1}-{2}", prev?.OpenTime, Bars.Last(2).OpenTime, bar0.OpenTime);     
                 }
             }
+            if (low0 == Bars.Last(1).Low && low0 == Bars.Last(2).Low) {
+                // ExecuteMarketOrder(TradeType.Buy, Symbol, Volume, "Stop Buy", StopLoss, OrderPrice);
+                Print("Tirple-Low Signal: {0}", bar0);
+                Bar? prev = ResistanceLevel(low0, false);
+                if (prev != null) {
+                    Print("Win! {0}...{1}-{2}", prev?.OpenTime, Bars.Last(2).OpenTime, bar0.OpenTime);     
+                }
+            }
+
         }
 
-        private Bar IsResistanceLevel(double level) {
+        private Bar? ResistanceLevel(double level, bool high) {
             for (int i = 0; i < BreakoutPeriod; i++) {
-                Bar bar = bars.Last(3 + i);
-                if (bar.High == level) {
-                    return bars;
+                Bar bar = Bars.Last(3 + i);
+                if (high) {
+                    if (bar.High == level) {
+                        return bar;
+                    } else {
+                        if (bar.Low == level) {
+                            return bar;
+                        }
+                    }
                 }
             }
             return null;
         }
 
     }
+    
     
 }
