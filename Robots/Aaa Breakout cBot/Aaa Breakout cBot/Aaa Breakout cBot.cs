@@ -17,6 +17,7 @@
 
 using System;
 using cAlgo.API;
+using cAlgo.API.Indicators;
 
 namespace cAlgo
 {
@@ -27,6 +28,24 @@ namespace cAlgo
         public double OrderPrice { get; set; }
         [Parameter("Breakout Period", DefaultValue = 24 * 60 * 60, MinValue = 0, Step = 1)]
         public int BreakoutPeriod { get; set; }
+        [Parameter("Position Volume", DefaultValue = 1, MinValue = 0.1, Step = 0.1)]
+        public double PositionVolume { get; set; }
+        [Parameter(DefaultValue = 14)]
+        public int Periods { get; set; }
+        [Parameter(DefaultValue = 0.002)]
+        public double ATRValue { get; set; }
+        [Parameter("MA Type", DefaultValue = MovingAverageType.Exponential)]
+        public MovingAverageType MAType { get; set; }
+        [Parameter("TakeProfitInPerc", DefaultValue = 1.5, MinValue = 0, Step = 0.01)]
+        public double TakeProfitInPerc { get; set; }
+        [Parameter("StopLossInPerc", DefaultValue = 0.25, MinValue = 0, Step = 0.01)]
+        public double StopLossInPerc { get; set; }
+
+        private AverageTrueRange ATR;
+
+        protected override void OnStart() {
+            ATR = Indicators.AverageTrueRange(Periods, MAType);
+        }
 
         protected override void OnBar()
         {
@@ -38,19 +57,27 @@ namespace cAlgo
             double low0 = bar0.Low;
 
             if (high0 == Bars.Last(1).High && high0 == Bars.Last(2).High) {
-                // ExecuteMarketOrder(TradeType.Buy, Symbol, Volume, "Stop Buy", StopLoss, OrderPrice);
                 Print("Tirple-High Signal: {0}", bar0);
                 Bar? prev = ResistanceLevel(high0, true);
                 if (prev != null) {
-                    Print("Win! {0}...{1}-{2}", prev?.OpenTime, Bars.Last(2).OpenTime, bar0.OpenTime);     
+                    Print("Win! {0}...{1}-{2}", prev?.OpenTime, Bars.Last(2).OpenTime, bar0.OpenTime);
+                    var atrInPips = ATR.Result.Last(1) * (Symbol.TickSize / Symbol.PipSize * Math.Pow(10, Symbol.Digits));
+                    var stopLossInPips = atrInPips * StopLossInPerc;
+                    var takeProfitInPips = atrInPips * TakeProfitInPerc;
+                    PlaceLimitOrder(TradeType.Buy, Symbol.Name, PositionVolume, high0 + 1,
+                        "Stop Buy", stopLossInPips, takeProfitInPips);
                 }
             }
             if (low0 == Bars.Last(1).Low && low0 == Bars.Last(2).Low) {
-                // ExecuteMarketOrder(TradeType.Buy, Symbol, Volume, "Stop Buy", StopLoss, OrderPrice);
                 Print("Tirple-Low Signal: {0}", bar0);
                 Bar? prev = ResistanceLevel(low0, false);
                 if (prev != null) {
                     Print("Win! {0}...{1}-{2}", prev?.OpenTime, Bars.Last(2).OpenTime, bar0.OpenTime);     
+                    var atrInPips = ATR.Result.Last(1) * (Symbol.TickSize / Symbol.PipSize * Math.Pow(10, Symbol.Digits));
+                    var stopLossInPips = atrInPips * StopLossInPerc;
+                    var takeProfitInPips = atrInPips * TakeProfitInPerc;
+                    PlaceLimitOrder(TradeType.Sell, Symbol.Name, PositionVolume, low0 - 1,
+                        "Stop Sell", stopLossInPips, takeProfitInPips);
                 }
             }
 
@@ -71,7 +98,7 @@ namespace cAlgo
             }
             return null;
         }
-
+        
     }
     
     
