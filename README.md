@@ -1,5 +1,6 @@
 # s-Trader
 
+The original idea - https://docs.google.com/document/d/16yNCHrlI3-S9n5QjRP5x2nu0RLxytna5WX-OVVTSeVQ
 
 
 ## Getting started
