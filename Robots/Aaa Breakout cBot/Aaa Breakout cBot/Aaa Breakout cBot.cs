@@ -64,7 +64,7 @@ namespace cAlgo
                     var atrInPips = ATR.Result.Last(1) * (Symbol.TickSize / Symbol.PipSize * Math.Pow(10, Symbol.Digits));
                     var stopLossInPips = atrInPips * StopLossInPerc;
                     var takeProfitInPips = atrInPips * TakeProfitInPerc;
-                    PlaceLimitOrder(TradeType.Buy, Symbol.Name, PositionVolume, high0 + 1,
+                    PlaceLimitOrder(TradeType.Buy, Symbol.Name, PositionVolume, high0 + 0.01,
                         "Stop Buy", stopLossInPips, takeProfitInPips);
                 }
             }
@@ -76,7 +76,7 @@ namespace cAlgo
                     var atrInPips = ATR.Result.Last(1) * (Symbol.TickSize / Symbol.PipSize * Math.Pow(10, Symbol.Digits));
                     var stopLossInPips = atrInPips * StopLossInPerc;
                     var takeProfitInPips = atrInPips * TakeProfitInPerc;
-                    PlaceLimitOrder(TradeType.Sell, Symbol.Name, PositionVolume, low0 - 1,
+                    PlaceLimitOrder(TradeType.Sell, Symbol.Name, PositionVolume, low0 - 0.01,
                         "Stop Sell", stopLossInPips, takeProfitInPips);
                 }
             }
