@@ -52,15 +52,15 @@ namespace cAlgo
             if (Bars.Count < 3)
                 return;
 
-            Bar bar0 = Bars.Last(0);
+            Bar bar0 = Bars.Last(1);
             double high0 = bar0.High;
             double low0 = bar0.Low;
 
-            if (high0 == Bars.Last(1).High && high0 == Bars.Last(2).High) {
+            if (high0 == Bars.Last(3).High && high0 == Bars.Last(2).High) {
                 Print("Tirple-High Signal: {0}", bar0);
                 Bar? prev = ResistanceLevel(high0, true);
                 if (prev != null) {
-                    Print("Win! {0}...{1}-{2}", prev?.OpenTime, Bars.Last(2).OpenTime, bar0.OpenTime);
+                    Print("Win! {0}...{1}-{2}", prev?.OpenTime, Bars.Last(3).OpenTime, bar0.OpenTime);
                     var atrInPips = ATR.Result.Last(1) * (Symbol.TickSize / Symbol.PipSize * Math.Pow(10, Symbol.Digits));
                     var stopLossInPips = atrInPips * StopLossInPerc;
                     var takeProfitInPips = atrInPips * TakeProfitInPerc;
@@ -68,11 +68,11 @@ namespace cAlgo
                         "Stop Buy", stopLossInPips, takeProfitInPips);
                 }
             }
-            if (low0 == Bars.Last(1).Low && low0 == Bars.Last(2).Low) {
+            if (low0 == Bars.Last(3).Low && low0 == Bars.Last(2).Low) {
                 Print("Tirple-Low Signal: {0}", bar0);
                 Bar? prev = ResistanceLevel(low0, false);
                 if (prev != null) {
-                    Print("Win! {0}...{1}-{2}", prev?.OpenTime, Bars.Last(2).OpenTime, bar0.OpenTime);     
+                    Print("Win! {0}...{1}-{2}", prev?.OpenTime, Bars.Last(3).OpenTime, bar0.OpenTime);     
                     var atrInPips = ATR.Result.Last(1) * (Symbol.TickSize / Symbol.PipSize * Math.Pow(10, Symbol.Digits));
                     var stopLossInPips = atrInPips * StopLossInPerc;
                     var takeProfitInPips = atrInPips * TakeProfitInPerc;
