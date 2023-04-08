@@ -55,7 +55,6 @@ for (int i = _bars.ClosePrices.Count - 1; i >= _bars.ClosePrices.Count - 5; i--)
 }
 
 // Output the level price for the anomalous bar
-
 if (anomalousIndex != -1)
 {
     if (_bars.ClosePrices[anomalousIndex] > _bars.OpenPrices[anomalousIndex])
