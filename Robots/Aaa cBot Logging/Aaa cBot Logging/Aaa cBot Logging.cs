@@ -30,6 +30,7 @@ namespace cAlgo.Robots
     public class AaacBotLogging : Robot
     {
     
+        // Обработчик события Запуск Бота
         protected override void OnStart()
         {
             // To learn more about cTrader Automate visit our Help Center:
@@ -38,15 +39,17 @@ namespace cAlgo.Robots
 
         }
         
+        // Обработчик события Остановка Бота
         protected override void OnStop() 
         {
             Print("The bot is stopped.");
         }
 
+        // Обработчик события Открытие Бара, time-frame бара определяется в свойствах бота
         protected override void OnBar()
         {
+            // Т.к. событие Открытие Бара, а нам как правило интересен закрытый бар, то получаем его используя метод Bars.Last(1)
             var closedBar = Bars.Last(1);
-            // Print("Bars count: " + Bars.Count + "; ClosedBar: " + closedBar);
             HandleShortBar(closedBar);
             var bars5m = MarketData.GetBars(TimeFrame.Minute5);
             if (bars5m.Last().OpenTime == Bars.Last().OpenTime) {
