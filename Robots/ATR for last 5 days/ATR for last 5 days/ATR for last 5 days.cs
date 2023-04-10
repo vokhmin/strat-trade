@@ -38,12 +38,15 @@ namespace cAlgo.Robots
         {
             var atrValues = new List<double>();
 
+            // AV: Почему тут начинается с 1? Почему не с 0? Т.e. реально обрабатываются 4 бара, а не 5.
             for (int i = 1; i < highPrices.Length; i++)
             {
                 var high = highPrices[i];
                 var low = lowPrices[i];
                 var previousClose = closePrices[i - 1];
 
+                // AV: Это кажется полной ерундой. Предполагается что в расчете ATR используется только High и Low,
+                // но по факту тут зачем то еще и closePrice.
                 var atr = Math.Max(high - low, Math.Max(Math.Abs(high - previousClose), Math.Abs(low - previousClose)));
                 atrValues.Add(atr);
             }
