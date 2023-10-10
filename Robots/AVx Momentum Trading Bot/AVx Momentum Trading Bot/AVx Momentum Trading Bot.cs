@@ -20,7 +20,7 @@ namespace cAlgo
     public class EqualClosePriceBot : Robot
     {
         [Parameter("Window Period, N TimeFrames", DefaultValue = 100, MinValue = 30, Step = 1)]
-        public int WindowPeriod { get; set }
+        public int WindowPeriod { get; set; }
         [Parameter("Order Price", DefaultValue = 0, MinValue = 0, Step = 1)]
         public double OrderPrice { get; set; }
         [Parameter("Breakout Period", DefaultValue = 24 * 60 * 60, MinValue = 0, Step = 1)]
@@ -39,7 +39,8 @@ namespace cAlgo
         public double StopLossInPerc { get; set; }
 
         private AverageTrueRange ATR;
-        private Bar window
+        private Bar window;
+        private int[] percentiles;
 
         protected override void OnStart() {
             ATR = Indicators.AverageTrueRange(Periods, MAType);
@@ -47,64 +48,30 @@ namespace cAlgo
 
         protected override void OnBar()
         {
+            var last = Bars.Count;
             if (Bars.Count < WindowPeriod) {
-                Print("Insufficient data to construct volatility statistics")
+                Print("Insufficient data to construct volatility statistics");
                 return;
             }
-            calcVolatility(Bars, 1)
-
-            Bar bar0 = Bars.Last(1);
-            double high0 = bar0.High;
-            double low0 = bar0.Low;
-
-            if (high0 == Bars.Last(3).High && high0 == Bars.Last(2).High) {
-                Print("Tirple-High Signal: {0}", bar0);
-                Bar? prev = ResistanceLevel(high0, true);
-                if (prev != null) {
-                    Print("Win! {0}...{1}-{2}", prev?.OpenTime, Bars.Last(3).OpenTime, bar0.OpenTime);
-                    var atrInPips = ATR.Result.Last(1) * (Symbol.TickSize / Symbol.PipSize * Math.Pow(10, Symbol.Digits));
-                    var stopLossInPips = atrInPips * StopLossInPerc;
-                    var takeProfitInPips = atrInPips * TakeProfitInPerc;
-                    PlaceLimitOrder(TradeType.Buy, Symbol.Name, PositionVolume, high0 + 0.01,
-                        "Stop Buy", stopLossInPips, takeProfitInPips);
-                }
+            double[] volatility = new double[WindowPeriod];
+            for (int i = 1; i <= WindowPeriod; i++) {
+                volatility[i-1] = (Bars.HighPrices.Last(i) - Bars.LowPrices.Last(i)) / 2;
             }
-            if (low0 == Bars.Last(3).Low && low0 == Bars.Last(2).Low) {
-                Print("Tirple-Low Signal: {0}", bar0);
-                Bar? prev = ResistanceLevel(low0, false);
-                if (prev != null) {
-                    Print("Win! {0}...{1}-{2}", prev?.OpenTime, Bars.Last(3).OpenTime, bar0.OpenTime);     
-                    var atrInPips = ATR.Result.Last(1) * (Symbol.TickSize / Symbol.PipSize * Math.Pow(10, Symbol.Digits));
-                    var stopLossInPips = atrInPips * StopLossInPerc;
-                    var takeProfitInPips = atrInPips * TakeProfitInPerc;
-                    PlaceLimitOrder(TradeType.Sell, Symbol.Name, PositionVolume, low0 - 0.01,
-                        "Stop Sell", stopLossInPips, takeProfitInPips);
-                }
-            }
-
+            // percentiles = calcVolatility(Bars, 1, 30)
+            Print($"Last Bar: {Bars.Last(1)}");
+            Print($"Volatility: [{volatility[0]},{volatility[1]},{volatility[2]}]");
+            return;
         }
 
-        private Bar? ResistanceLevel(double level, bool high) {
-            for (int i = 0; i < BreakoutPeriod; i++) {
-                Bar bar = Bars.Last(3 + i);
-                if (high) {
-                    if (bar.High == level) {
-                        return bar;
-                    } else {
-                        if (bar.Low == level) {
-                            return bar;
-                        }
-                    }
-                }
-            }
-            return null;
+        protected void calcVolatility() {
+            
         }
-        
+
         /**
           * ATR calculstion method, because unclear which type Standard or Custom ATR calculation shuld be used :(
           * Let's try any standard and look how it’ll work.
           */
-        protected calcATR() {
+        protected void calcATR() {
             
         }
         
