@@ -1,3 +1,9 @@
+# Visual Studio Code specific files
+.vscode/
+**/obj/
+**/bin/
+
+# cTrader, cAlgo
 *.algo
 /Robots/Sample*
 /Indicators/*

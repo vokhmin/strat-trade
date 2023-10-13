@@ -41,9 +41,11 @@ namespace cAlgo
         private AverageTrueRange ATR;
         private Bar window;
         private int[] percentiles;
+        double[] volatility = new double[WindowPeriod];
 
         protected override void OnStart() {
             ATR = Indicators.AverageTrueRange(Periods, MAType);
+
         }
 
         protected override void OnBar()
@@ -55,11 +57,12 @@ namespace cAlgo
             }
             double[] volatility = new double[WindowPeriod];
             for (int i = 1; i <= WindowPeriod; i++) {
-                volatility[i-1] = (Bars.HighPrices.Last(i) - Bars.LowPrices.Last(i)) / 2;
+                var index = WindowPeriod - i + 1;
+                volatility[i-1] = (Bars.HighPrices.Last(index) - Bars.LowPrices.Last(index)) / 2;
             }
             // percentiles = calcVolatility(Bars, 1, 30)
             Print($"Last Bar: {Bars.Last(1)}");
-            Print($"Volatility: [{volatility[0]},{volatility[1]},{volatility[2]}]");
+            Print($"Volatility: [{volatility[WindowPeriod - 1]},{volatility[WindowPeriod - 2]},{volatility[WindowPeriod - 3]}]");
             return;
         }
 
