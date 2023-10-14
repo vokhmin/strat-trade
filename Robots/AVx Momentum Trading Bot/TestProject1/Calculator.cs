@@ -20,16 +20,16 @@ public class PercentileCalculator
             throw new ArgumentException("Data array must not be empty or null.");
         }
 
-        if (percentile < 0 || percentile > 100)
+        if (percentile < 0.0 || percentile > 1.0)
         {
-            throw new ArgumentOutOfRangeException("Percentile must be between 0 and 100.");
+            throw new ArgumentOutOfRangeException("Percentile must be between 0.00 and 1.00");
         }
 
         // First, sort the data array
         Array.Sort(data);
 
         // Calculate the index of the percentile value
-        double index = (percentile / 100) * data.Length;
+        double index = percentile * (data.Length - 1);
 
         // Interpolate the percentile value if it's not an integer index
         if (Math.Floor(index) != index)

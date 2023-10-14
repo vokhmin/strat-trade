@@ -41,11 +41,11 @@ namespace cAlgo
         private AverageTrueRange ATR;
         private Bar window;
         private int[] percentiles;
-        double[] volatility = new double[WindowPeriod];
+        private double[] volatility;
 
         protected override void OnStart() {
             ATR = Indicators.AverageTrueRange(Periods, MAType);
-
+            volatility = new double[WindowPeriod];
         }
 
         protected override void OnBar()
