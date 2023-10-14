@@ -24,6 +24,18 @@ public class PercentileCalculatorTests
     }
 
     [Test]
+    public void CalculatePercentile_RealTest() {
+        double[] data = { 45, 50, 50, 60, 60, 70, 75, 80, 80, 90 };
+        Random random = new Random();
+
+        Assert.That(PercentileCalculator.CalculateValuePercentile(data, 65), Is.EqualTo(0.5));
+        Assert.That(PercentileCalculator.CalculatePercentile(data, 50), Is.EqualTo(65));
+        Assert.That(PercentileCalculator.CalculatePercentile(data, 80), Is.EqualTo(80));
+        Assert.That(PercentileCalculator.CalculatePercentile(data, 90), Is.EqualTo(90));
+
+    }
+
+    [Test]
     public void CalculatePercentile_PercentileForConstantSet()
     {
         double[] data = { 2, 2, 2, 2, 2 };

@@ -29,7 +29,7 @@ public class PercentileCalculator
         Array.Sort(data);
 
         // Calculate the index of the percentile value
-        double index = (percentile / 100) * (data.Length - 1);
+        double index = (percentile / 100) * data.Length;
 
         // Interpolate the percentile value if it's not an integer index
         if (Math.Floor(index) != index)
@@ -47,4 +47,13 @@ public class PercentileCalculator
             return data[(int)index];
         }
     }
+
+    public static double CalculateValuePercentile(double[] data, double value)
+    {
+        Array.Sort(data);
+        int index = Array.FindIndex(data, (double x) => x >= value);
+        double percentile = (double)index / data.Length;
+        return percentile;
+    }
+
 }
