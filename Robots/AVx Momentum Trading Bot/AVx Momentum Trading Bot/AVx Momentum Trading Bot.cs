@@ -55,11 +55,7 @@ namespace cAlgo
                 Print("Insufficient data to construct volatility statistics");
                 return;
             }
-            double[] volatility = new double[WindowPeriod];
-            for (int i = 1; i <= WindowPeriod; i++) {
-                var index = WindowPeriod - i + 1;
-                volatility[i-1] = (Bars.HighPrices.Last(index) - Bars.LowPrices.Last(index)) / 2;
-            }
+            double[] volatility = LastBarsVolatility(WindowPeriod);
             // percentiles = calcVolatility(Bars, 1, 30)
             Print($"Last Bar: {Bars.Last(1)}");
             Print($"Volatility: [{volatility[WindowPeriod - 1]},{volatility[WindowPeriod - 2]},{volatility[WindowPeriod - 3]}]");
@@ -76,6 +72,19 @@ namespace cAlgo
           */
         protected void calcATR() {
             
+        }
+
+        protected double[] LastBarsVolatility(int Count) {
+            double[] volatility = new double[Count];
+            for (int i = 1; i <= Count; i++) {
+                var index = Count - i + 1;
+                volatility[i-1] = (Bars.HighPrices.Last(index) - Bars.LowPrices.Last(index)) / 2;
+            }
+            return volatility;
+        }
+
+        protected double BarRange(Bar bar) {
+            return (bar.High - bar.Low) / 2;
         }
         
     }
