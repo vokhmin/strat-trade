@@ -11,6 +11,7 @@
 // -------------------------------------------------------------------------------------------------
 
 using System;
+using System.Diagnostics;
 using cAlgo.API;
 using cAlgo.API.Indicators;
 
@@ -40,6 +41,8 @@ namespace cAlgo
 
         private AverageTrueRange ATR;
         private Bar window;
+
+        SignalLevelDataSet dataSet;
         private int[] percentiles;
         private double[] volatility;
 
@@ -56,9 +59,14 @@ namespace cAlgo
                 return;
             }
             double[] volatility = LastBarsVolatility(WindowPeriod);
+            // double[] volatility = LastBarsVolatility(WindowPeriod);
             // percentiles = calcVolatility(Bars, 1, 30)
             Print($"Last Bar: {Bars.Last(1)}");
             Print($"Volatility: [{volatility[WindowPeriod - 1]},{volatility[WindowPeriod - 2]},{volatility[WindowPeriod - 3]}]");
+
+            var signals = new SignalDataSet().Init(Bars, WindowPeriod);
+            Print($"Volatility DataSet: {signals.volatility}");
+
             return;
         }
 
@@ -89,4 +97,5 @@ namespace cAlgo
         
     }
     
+
 }
