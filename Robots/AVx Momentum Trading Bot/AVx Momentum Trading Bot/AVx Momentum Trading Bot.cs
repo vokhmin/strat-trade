@@ -21,7 +21,7 @@ namespace cAlgo
     public class EqualClosePriceBot : Robot
     {
         [Parameter("Window Period, N TimeFrames", DefaultValue = 100, MinValue = 30, Step = 1)]
-        public int WindowPeriod { get; set; }
+        public int ObservedWindow { get; set; }
         [Parameter("Order Price", DefaultValue = 0, MinValue = 0, Step = 1)]
         public double OrderPrice { get; set; }
         [Parameter("Breakout Period", DefaultValue = 24 * 60 * 60, MinValue = 0, Step = 1)]
@@ -48,24 +48,25 @@ namespace cAlgo
 
         protected override void OnStart() {
             ATR = Indicators.AverageTrueRange(Periods, MAType);
-            volatility = new double[WindowPeriod];
+            volatility = new double[ObservedWindow];
         }
 
         protected override void OnBar()
         {
             var last = Bars.Count;
-            if (Bars.Count < WindowPeriod) {
+            if (Bars.Count < ObservedWindow) {
                 Print("Insufficient data to construct volatility statistics");
                 return;
             }
-            double[] volatility = LastBarsVolatility(WindowPeriod);
+
+            double[] volatility = LastBarsVolatility(ObservedWindow);
             // double[] volatility = LastBarsVolatility(WindowPeriod);
             // percentiles = calcVolatility(Bars, 1, 30)
             Print($"Last Bar: {Bars.Last(1)}");
-            Print($"Volatility: [{volatility[WindowPeriod - 1]},{volatility[WindowPeriod - 2]},{volatility[WindowPeriod - 3]}]");
+            Print($"Volatility: [{volatility[ObservedWindow - 1]},{volatility[ObservedWindow - 2]},{volatility[ObservedWindow - 3]}]");
 
-            var signals = new SignalDataSet().Init(Bars, WindowPeriod);
-            Print($"Volatility DataSet: {signals.volatility}");
+            var signals = new SignalLevelDataSet().InitByLastBars(Bars, ObservedWindow);
+            Print($"Signal Levels DataSet: {signals}");
 
             return;
         }

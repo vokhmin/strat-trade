@@ -1,12 +1,12 @@
-// Percentile.cs
+// PercentileCalc.cs
 using System;
 using System.Linq;
 
-class Percentile
+class PercentileCalc
 {
     private double[] data;
 
-    public Percentile(double[] data)
+    public PercentileCalc(double[] data)
     {
         if (data == null || data.Length == 0)
         {
@@ -15,6 +15,16 @@ class Percentile
         this.data = data;
         // First, sort the data array
         Array.Sort(data);
+    }
+
+    public static double PercentileForValue(double[] data, double value) {
+        var stat = new PercentileCalc(data);
+        return stat.forValue(value);
+    }
+
+    public static double valueForPercentile(double[] data, double percentile) {
+        var stat = new PercentileCalc(data);
+        return stat.valueFor(percentile);
     }
 
     /**
