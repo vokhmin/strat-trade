@@ -14,6 +14,7 @@ using System;
 using System.Diagnostics;
 using cAlgo.API;
 using cAlgo.API.Indicators;
+using NUnit.Framework.Internal;
 
 namespace cAlgo
 {
@@ -40,9 +41,11 @@ namespace cAlgo
         public double StopLossInPerc { get; set; }
 
         private AverageTrueRange ATR;
+        [Parameter("ATRRatio", DefaultValue = 0.3, MinValue = 0.01, Step = 0.01)]
+        public double ATRRatio { get; set; } 
         private Bar window;
 
-        SignalLevelDataSet dataSet;
+        SignalLevelsDataSet dataSet;
         private int[] percentiles;
         private double[] volatility;
 
@@ -51,7 +54,7 @@ namespace cAlgo
             volatility = new double[ObservedWindow];
         }
 
-        protected override void OnBar()
+        protected override void OnBarClosed()
         {
             var last = Bars.Count;
             if (Bars.Count < ObservedWindow) {
@@ -62,11 +65,15 @@ namespace cAlgo
             double[] volatility = LastBarsVolatility(ObservedWindow);
             // double[] volatility = LastBarsVolatility(WindowPeriod);
             // percentiles = calcVolatility(Bars, 1, 30)
-            Print($"Last Bar: {Bars.Last(1)}");
+            Print($"Last Bar: {Bars.Last(0)}");
             Print($"Volatility: [{volatility[ObservedWindow - 1]},{volatility[ObservedWindow - 2]},{volatility[ObservedWindow - 3]}]");
 
-            var signals = new SignalLevelDataSet().InitByLastBars(Bars, ObservedWindow);
-            Print($"Signal Levels DataSet: {signals}");
+            var signals = new SignalLevelsDataSet().InitByLastBars(Bars, ObservedWindow);
+            OrderTrigger trigger = signals.detectSignal(Bars.Last(0), ATR.Result.LastValue * ATRRatio);
+            if (trigger != null) {
+                Print($"Detected the point to openning order: {trigger}");
+                Print($"Signals Dataset: {signals}");
+            }
 
             return;
         }
@@ -97,6 +104,4 @@ namespace cAlgo
         }
         
     }
-    
-
 }
