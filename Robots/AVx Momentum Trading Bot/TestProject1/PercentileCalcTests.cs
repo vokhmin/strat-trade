@@ -1,9 +1,9 @@
-// PercentileCalculatorTests.cs
+// PercentileCalcTests.cs
 using NUnit.Framework;
 using System;
 
 [TestFixture]
-public class PercentileCalculatorTests
+public class PercentileCalcTests
 {
     [Test]
     public void CalculatePercentile_EmptyData_ThrowsArgumentException()
